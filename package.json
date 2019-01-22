@@ -1,0 +1,15 @@
+{
+  "name": "tablebot",
+  "version": "1.0.0",
+  "description": "Robot that does the thing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node main.js",
+    "test": "./node_modules/jest/bin/jest.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
+}
