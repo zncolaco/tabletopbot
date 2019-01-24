@@ -30,6 +30,13 @@ adjacentDirections.push(Facing.NORTH, Facing.EAST);
 adjacentDirections.push(Facing.EAST, Facing.SOUTH);
 adjacentDirections.push(Facing.SOUTH, Facing.WEST);
 
+/**
+ * Executes a requested command.
+ * @param {Object} state - the state of the robot. Must contain, x, y, and facing
+ * @param {Object} command - the command to be executed. Must contain an action. 
+ *                           Must contain a data field if a PLACE command is to be executed.
+ * @return {Object} state - the new state of the robot. If the command was invalid, the state will remain the same.
+ */
 processCommand = (state, command) => { 
     let proposedState = Object.assign({}, state);
 
@@ -55,8 +62,11 @@ processCommand = (state, command) => {
             proposedState.facing = command.data.facing;
             proposedState.isPlaced = true;
             break
+        case Actions.REPORT:
+            console.info(`Robot is currently at (${state.x},${state.y}, facing ${state.facing})`)
+            break;
         default:
-            console.log("Action was invalid");
+            console.debug("Action was invalid");
             break;
     }
     console.debug("proposed state:" + proposedState.x + " " + proposedState.y + " " + proposedState.facing);

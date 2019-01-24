@@ -1,6 +1,6 @@
 const robot = require ("./robot.js");
 
-describe("Basic robot commands", () => {
+describe("Movement and reporting", () => {
     
     let initialState;
 
@@ -38,9 +38,16 @@ describe("Basic robot commands", () => {
         initialState = { x: 4, y: 4, facing: robot.Facing.NORTH };
         expect(robot.processCommand(initialState, {action: "move"})).toEqual(initialState);
     });
+
+    it.only("should report the robot's position when the 'report' command is given", () => {
+        console.info = jest.fn();
+        initialState.isPlaced = true;
+        robot.processCommand(initialState, {action: "report"});
+        expect(console.info).toBeCalledWith("Robot is currently at (0,0, facing north)");
+    });
 });
 
-describe("Robot placement and reporting", () => {
+describe("Robot placement", () => {
         
     let initialState;
 
@@ -62,11 +69,11 @@ describe("Robot placement and reporting", () => {
     it("should ignore all other commands until the robot has been placed", () => {
         const expected = initialState
         expect(robot.processCommand(initialState, {action: "move"})).toEqual(expected);
+        expect(robot.processCommand(initialState, {action: "left"})).toEqual(expected);
+        expect(robot.processCommand(initialState, {action: "right"})).toEqual(expected);
+        expect(robot.processCommand(initialState, {action: "report"})).toEqual(expected);
     });
 
-    it("should report the robot's position when the 'report' command is given", () => {
-
-    });
 });
 
 describe("Robot input processing", () => {
