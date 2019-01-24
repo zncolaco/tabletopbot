@@ -9,16 +9,17 @@ const rl = readline.createInterface({
 let robotState = {
     x: 0,
     y: 0,
-    facing: 0,
+    facing: robot.Facing.NORTH,
 }
+
 
 input();
 
 function input(){
-    rl.question('What do you want to do?', (userInput) => {
+    rl.question("\nWhat's your next move? ", (userInput) => {
         const action = robot.processInput(userInput);
         state = processAction(robotState, action);
-        console.log(`Current state is x:${robotState.x} y:${robotState.y} facing: ${robotState.facing}`);
+        console.debug(`Robot at (${robotState.x},${robotState.y}), facing ${robotState.facing}`);
         input();
     });
 }
