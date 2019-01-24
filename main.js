@@ -7,12 +7,11 @@ const rl = readline.createInterface({
 });
 
 let robotState = {
-    x: 0,
-    y: 0,
-    facing: robot.Facing.NORTH,
+    x: undefined,
+    y: undefined,
+    facing: undefined,
     isPlaced: false,
 }
-
 
 input();
 

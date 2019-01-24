@@ -1,4 +1,3 @@
-const robot = require('./robot.js');
 const BiMap = require('bimap');
 
 const Actions = {
@@ -32,7 +31,13 @@ adjacentDirections.push(Facing.EAST, Facing.SOUTH);
 adjacentDirections.push(Facing.SOUTH, Facing.WEST);
 
 processCommand = (state, command) => { 
-    let proposedState = state;
+    let proposedState = Object.assign({}, state);
+
+    if (!(state.isPlaced || (command.action === Actions.PLACE))){
+        console.log("Please place the robot first")
+        return proposedState;
+    }
+
     switch (command.action) {
         case Actions.MOVE:
             proposedState.x += directionMultiplier.get(state.facing).x;
@@ -48,13 +53,14 @@ processCommand = (state, command) => {
             proposedState.x = command.data.x;
             proposedState.y = command.data.y;
             proposedState.facing = command.data.facing;
+            proposedState.isPlaced = true;
             break
         default:
             console.log("Action was invalid");
             break;
     }
     console.debug("proposed state:" + proposedState.x + " " + proposedState.y + " " + proposedState.facing);
-    return isStateValid(proposedState) ? proposedState : state
+    return isStateValid(proposedState) ? proposedState : state;
 }
 
 /**
@@ -63,8 +69,7 @@ processCommand = (state, command) => {
  * @returns {boolean} true if state is valid, otherwise false
  */
 isStateValid = (state) => {
-    // Check bounds here
-    return (state.x >= 0 && state.y >= 0 && state.x < 5 && state.y < 5);
+    return ((state.x >= 0) && (state.y >= 0) && (state.x < 5) && (state.y < 5));
 }
 
 /**
@@ -83,14 +88,17 @@ function processInput (input) {
             // Split on first occurcence of space, then split on subsequent commas
             const inputData = cleanInput.split(/\s(.+)/)[1].split(",");
             console.log(inputData);
-            data = { x: inputData[0].trim(), y: inputData[1].trim(), facing: inputData[2].trim() };
+            data = { x: parseInt(inputData[0].trim()),
+                     y: parseInt(inputData[1].trim()),
+                     facing: inputData[2].trim()
+                   };
             // inputIsValid = false;
             // console.log("PLACE commands should be entered in the format PLACE X,Y,FACING");
     } else {
         action = cleanInput
-        if (!(action in Actions)) {
+        if (!Object.values(Actions).includes(action)) {
             inputIsValid = false;
-            console.log("Action not one of LEFT/RIGHT/PLACE/REPORT/MOVE");
+            console.log("Action was not one of LEFT/RIGHT/PLACE/REPORT/MOVE");
         }
     }
     return {action, data, inputIsValid}
