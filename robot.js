@@ -1,36 +1,4 @@
-const BiMap = require('bimap');
-
-const Actions = {
-    PLACE: "place",
-    MOVE: "move",
-    LEFT: "left",
-    RIGHT: "right",
-    REPORT: "report"
-}
-
-const Facing = {
-    NORTH: "north",
-    EAST: "east",
-    SOUTH: "south",
-    WEST: "west",
-}
-
-const directionMultiplier = new Map()
-directionMultiplier.set(Facing.NORTH, { x: 0, y: 1 });
-directionMultiplier.set(Facing.SOUTH, { x: 0, y: -1 });
-directionMultiplier.set(Facing.EAST, { x: 1, y: 0 });
-directionMultiplier.set(Facing.WEST, { x: -1, y: 0 });
-
-const adjacentDirections = new BiMap;
-adjacentDirections.push(Facing.WEST, Facing.NORTH);
-adjacentDirections.push(Facing.NORTH, Facing.EAST);
-adjacentDirections.push(Facing.EAST, Facing.SOUTH);
-adjacentDirections.push(Facing.SOUTH, Facing.WEST);
-
-Object.freeze(Facing);
-Object.freeze(Actions);
-Object.freeze(directionMultiplier);
-Object.freeze(adjacentDirections);
+const {Actions, Facing, adjacentDirections, directionMultiplier, MapBounds} = require('./constants');
 
 /**
  * Executes a requested command.
@@ -82,7 +50,8 @@ processCommand = (state, command) => {
  * @returns {boolean} true if state is valid, otherwise false
  */
 isStateValid = (state) => {
-    return ((state.x >= 0) && (state.y >= 0) && (state.x < 5) && (state.y < 5));
+    return ((state.x >= MapBounds.WEST) && (state.y >= MapBounds.SOUTH) 
+            && (state.x < MapBounds.EAST) && (state.y < MapBounds.NORTH));
 }
 
 
