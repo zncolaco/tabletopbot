@@ -13,7 +13,15 @@ let robotState = {
   isPlaced: false,
 };
 
-function input() {
+const debug = process.env.DEBUG;
+
+console.debug = (...args) => {
+  if (debug) {
+    console.log(args);
+  }
+};
+
+const input = () => {
   rl.question("\nWhat's your next move? ", (userInput) => {
     const commands = robot.processInput(userInput);
     commands.forEach((command) => {
@@ -22,6 +30,6 @@ function input() {
     console.debug(`Robot at (${robotState.x},${robotState.y}), facing ${robotState.facing}`);
     input();
   });
-}
+};
 
 input();

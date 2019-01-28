@@ -10,6 +10,7 @@ const {
 const isStateValid = state => ((state.x >= MapBounds.WEST) && (state.y >= MapBounds.SOUTH)
             && (state.x < MapBounds.EAST) && (state.y < MapBounds.NORTH));
 
+
 /**
  * Executes a requested command.
  * @param {Object} state - the state of the robot. Must contain, x, y, and facing
@@ -44,14 +45,19 @@ const processCommand = (state, command) => {
       proposedState.isPlaced = true;
       break;
     case Actions.REPORT:
-      console.info(`Robot is currently at (${state.x},${state.y}, facing ${state.facing})`);
+      console.info(`Robot is currently at: ${state.x},${state.y}, facing ${state.facing}`);
       break;
     default:
       console.debug('Action was invalid');
       break;
   }
   console.debug(`proposed state: x:${proposedState.x} y:${proposedState.y} f:${proposedState.facing}`);
-  return isStateValid(proposedState) ? proposedState : state;
+
+  if (!isStateValid(proposedState)) {
+    console.log('Action would result in robot being in an invalid state. Discarding action.');
+    return state;
+  }
+  return proposedState;
 };
 
 /**

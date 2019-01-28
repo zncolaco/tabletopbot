@@ -22,6 +22,10 @@ What's your next move? move
 What's your next move? report
 Robot at (1,3), facing west
 ```
+
+## Debugging
+Using `npm run dev` instead of `npm start` will enable debug logging
+
 ## Run tests:
 
 ```
