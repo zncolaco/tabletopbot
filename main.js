@@ -17,8 +17,10 @@ input();
 
 function input(){
     rl.question("\nWhat's your next move? ", (userInput) => {
-        const command = robot.processInput(userInput);
-        robotState = command.inputIsValid ? processCommand(robotState, command) : robotState;
+        const commands = robot.processInput(userInput);
+        commands.forEach(command => {
+            robotState = processCommand(robotState, command)
+        });
         console.debug(`Robot at (${robotState.x},${robotState.y}), facing ${robotState.facing}`);
         input();
     });

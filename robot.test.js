@@ -39,7 +39,7 @@ describe("Movement and reporting", () => {
         expect(robot.processCommand(initialState, {action: "move"})).toEqual(initialState);
     });
 
-    it.only("should report the robot's position when the 'report' command is given", () => {
+    it("should report the robot's position when the 'report' command is given", () => {
         console.info = jest.fn();
         initialState.isPlaced = true;
         robot.processCommand(initialState, {action: "report"});
@@ -77,22 +77,38 @@ describe("Robot placement", () => {
 });
 
 describe("Robot input processing", () => {
-    it ("should mark any commands that do not match LEFT/RIGHT/MOVE/REPORT/PLACE as invalid", () => {
-        expect(robot.processInput("potato").isInputValid).toBeFalsy();
-        expect(robot.processInput("moveleft").isInputValid).toBeFalsy();
-        expect(robot.processInput("moveeeee").isInputValid).toBeFalsy();
+    
+    it ("should not return commands that do not match one of LEFT/RIGHT/MOVE/REPORT/PLACE", () => {
+        expect(robot.processInput("potato")).toHaveLength(0)
+        // expect(robot.processInput("moveleft")).toHaveLength(0);
+        expect(robot.processInput("moveeeee")).toHaveLength(0);
     });
 
-    it("should mark any 'place' commands that do not have a valid data structure as invalid", () => {
-        expect(robot.processInput("place 32north").isInputValid).toBeFalsy();
+    it("should convert a valid input string into a command", () => {
+        expect(robot.processInput("move")).toEqual([{action: robot.Actions.MOVE}]);
+    });
+
+    it("should return x, y and facing data for 'place' commands", () => {
+        expect(robot.processInput("place 2,3,north")).toEqual([{action: robot.Actions.PLACE, data: {x: 2, y: 3, facing: robot.Facing.NORTH}}]);
+    });
+
+    it("should convert multiple space seperated input actions into multiple commands", () => {
+        const expected  = [{action: robot.Actions.PLACE, data: {x: 2, y: 3, facing: robot.Facing.NORTH}},
+                            {action: robot.Actions.LEFT},
+                            {action: robot.Actions.MOVE}];
+        expect(robot.processInput("place 2,3,north left   move")).toEqual(expected);
     });
 
     it ("should normalise the actions before returning them", () => {
-        expect(robot.processInput("MoVe").action).toEqual(robot.Actions.MOVE);
-        expect(robot.processInput("  MoVe       ").action).toEqual(robot.Actions.MOVE);
+        expect(robot.processInput("MoVe")[0].action).toEqual(robot.Actions.MOVE);
+        expect(robot.processInput("  MoVe       ")[0].action).toEqual(robot.Actions.MOVE);
     })
 
+    it("should not return any 'place' commands that do not have a valid data structure", () => {
+        expect(robot.processInput("place 32north")).toHaveLength(0);
+    });
+
     it ("should reject valid commands that have additional data passed in after the command", () => {
-        expect(robot.processInput("move 3,2,NORTH").isInputValid).toBeFalsy();
+        expect(robot.processInput("move 3,2,NORTH")).toHaveLength(0);
     });
 });

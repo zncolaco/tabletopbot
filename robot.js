@@ -46,6 +46,7 @@ processCommand = (state, command) => {
         console.log("Please place the robot first")
         return proposedState;
     }
+    console.log("action: " + command.action);
 
     switch (command.action) {
         case Actions.MOVE:
@@ -84,39 +85,45 @@ isStateValid = (state) => {
     return ((state.x >= 0) && (state.y >= 0) && (state.x < 5) && (state.y < 5));
 }
 
+
 /**
  * Extract the required action and any additional data from the user input
- * Input for "PLACE" commands assumes the format PLACE x,y,facing
+ * Input for "PLACE" commands assumes the format PLACE x,y,facing. 
+ * Commands are case insensitive. Multiple commands can be entered using a space as a seperator.
  * @param {string} input - the user input
  * @returns {Object} action - the command given, data - any additional data
  */
 processInput = (input) => {
-    let action;
-    let data;
-    let inputIsValid = true;
-    const cleanInput = input.trim().toLowerCase();
-    if (cleanInput.includes(Actions.PLACE)) {
-        action = Actions.PLACE;
-        // Split on first occurcence of space, then split on subsequent commas
-        try {
-            const inputData = cleanInput.split(/\s(.+)/)[1].split(",");
-            data = {
-                x: parseInt(inputData[0].trim()),
-                y: parseInt(inputData[1].trim()),
-                facing: inputData[2].trim()
-            };
-        } catch (e) {
-            inputIsValid = false;
-            console.log("PLACE commands should be entered in the format PLACE X,Y,FACING");
-        }
-    } else {
-        action = cleanInput
-        if (!Object.values(Actions).includes(action)) {
-            inputIsValid = false;
+    // Split input on any recognised command using a positive lookahead to keep the matched tokens
+    const rawCommands = input.toLowerCase().split(/(?=move|left|right|place|report)/g);
+    const commands = [];
+    
+    rawCommands.forEach((rawCommand) => {
+        const command = rawCommand.trim();
+        let action;
+        let data;
+        if (command.includes(Actions.PLACE)) {
+            action = Actions.PLACE;
+            // Split on first occurcence of space, then split on subsequent commas
+            try {
+                const inputData = command.split(/\s(.+)/)[1].split(",");
+                data = {
+                    x: parseInt(inputData[0].trim()),
+                    y: parseInt(inputData[1].trim()),
+                    facing: inputData[2].trim()
+                };
+                commands.push({action, data})
+            } catch (e) {
+                console.log("PLACE commands should be entered in the format PLACE X,Y,FACING");
+            }
+        } else if (Object.values(Actions).includes(command)) {
+            action = command;
+            commands.push({action});
+        } else {
             console.log("Action was not one of LEFT/RIGHT/PLACE/REPORT/MOVE");
         }
-    }
-    return { action, data, inputIsValid }
+    });
+    return commands;
 }
 
 exports.processCommand = processCommand;
