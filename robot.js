@@ -1,5 +1,5 @@
 const {
-  Actions, Facing, adjacentDirections, directionMultiplier, MapBounds,
+  Actions, adjacentDirections, directionMultiplier, MapBounds, Facing,
 } = require('./constants');
 
 /**
@@ -49,7 +49,7 @@ const processCommand = (state, command) => {
       break;
     default:
       console.debug('Action was invalid');
-      break;
+      return state;
   }
   console.debug(`proposed state: x:${proposedState.x} y:${proposedState.y} f:${proposedState.facing}`);
 
@@ -57,6 +57,7 @@ const processCommand = (state, command) => {
     console.log('Action would result in robot being in an invalid state. Discarding action.');
     return state;
   }
+  console.log(`Robot succesfully executed action ${command.action}`);
   return proposedState;
 };
 
@@ -65,7 +66,8 @@ const processCommand = (state, command) => {
  * Input for "PLACE" commands assumes the format PLACE x,y,facing.
  * Commands are case insensitive. Multiple commands can be entered using a space as a seperator.
  * @param {string} input - the user input
- * @returns {Object} action - the command given, data - any additional data
+ * @returns {Object[]} array of commands containing: action - the action given
+ *                                                   data - any additional data
  */
 const processInput = (input) => {
   // Split input on any recognised command using a positive lookahead to keep the matched tokens
@@ -81,14 +83,19 @@ const processInput = (input) => {
       // Split on first occurcence of space, then split on subsequent commas
       try {
         const inputData = command.split(/\s(.+)/)[1].split(',');
+        const facing = inputData[2].trim();
+        if (!Object.values(Facing).includes(facing)) {
+          throw new Error(`Direction ${facing} not one of NORTH/SOUTH/EAST/WEST`);
+        }
         data = {
           x: parseInt(inputData[0].trim(), 10),
           y: parseInt(inputData[1].trim(), 10),
-          facing: inputData[2].trim(),
+          facing,
         };
         commands.push({ action, data });
       } catch (e) {
         console.log('PLACE commands should be entered in the format PLACE X,Y,FACING');
+        console.debug(e.message);
       }
     } else if (Object.values(Actions).includes(command)) {
       action = command;
@@ -100,7 +107,16 @@ const processInput = (input) => {
   return commands;
 };
 
+const commandLoop = (state, input) => {
+  let newState = Object.assign({}, state);
+  const commands = processInput(input);
+  commands.forEach((command) => {
+    newState = processCommand(newState, command);
+  });
+  console.debug(`Robot at (${newState.x},${newState.y}), facing ${newState.facing}`);
+  return newState;
+};
+
 exports.processCommand = processCommand;
 exports.processInput = processInput;
-exports.Facing = Facing;
-exports.Actions = Actions;
+exports.commandLoop = commandLoop;

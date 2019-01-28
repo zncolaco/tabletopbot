@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node main.js",
     "test": "./node_modules/jest/bin/jest.js",
-    "dev": "DEBUG=true node main.js"
+    "dev": "DEBUG=true node main.js",
+    "demo": "node demo.js"
   },
   "author": "Zenon Colaco",
   "license": "ISC",

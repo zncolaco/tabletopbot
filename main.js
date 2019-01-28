@@ -23,11 +23,7 @@ console.debug = (...args) => {
 
 const input = () => {
   rl.question("\nWhat's your next move? ", (userInput) => {
-    const commands = robot.processInput(userInput);
-    commands.forEach((command) => {
-      robotState = robot.processCommand(robotState, command);
-    });
-    console.debug(`Robot at (${robotState.x},${robotState.y}), facing ${robotState.facing}`);
+    robotState = robot.commandLoop(robotState, userInput);
     input();
   });
 };

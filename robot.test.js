@@ -54,7 +54,7 @@ describe('Movement and reporting', () => {
     console.info = jest.fn();
     initialState.isPlaced = true;
     robot.processCommand(initialState, { action: 'report' });
-    expect(console.info).toBeCalledWith('Robot is currently at (0,0, facing north)');
+    expect(console.info).toBeCalledWith('Robot is currently at: 0,0, facing north');
   });
 });
 
@@ -102,6 +102,10 @@ describe('Robot input processing', () => {
 
   it("should return x, y and facing data for 'place' commands", () => {
     expect(robot.processInput('place 2,3,north')).toEqual([{ action: Actions.PLACE, data: { x: 2, y: 3, facing: Facing.NORTH } }]);
+  });
+
+  it('should reject directions not part that do not beloong to NORTH/SOUTH/EAST/WEST', () => {
+    expect(robot.processInput('place 2,3,blah')).toHaveLength(0);
   });
 
   it('should convert multiple space seperated input actions into multiple commands', () => {

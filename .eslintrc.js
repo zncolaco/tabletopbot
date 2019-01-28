@@ -5,6 +5,6 @@ module.exports = {
     },
     "rules": {
         "no-console": "off",
-        allowShortCircuit: true,
+        "allowShortCircuit": "true",
     }
 };

@@ -23,8 +23,14 @@ What's your next move? report
 Robot at (1,3), facing west
 ```
 
+## Run demo:
+This executes a preset list of inputs defined in `demo.js`
+
+```
+npm run demo
+```
 ## Debugging
-Using `npm run dev` instead of `npm start` will enable debug logging
+Use `npm run dev` instead of `npm start`. This will enable debug logging.
 
 ## Run tests:
 
