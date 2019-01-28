@@ -2,7 +2,7 @@ const BiMap = require('bimap');
 
 const Actions = {
     PLACE: "place",
-    MOVE: "move",   
+    MOVE: "move",
     LEFT: "left",
     RIGHT: "right",
     REPORT: "report"
@@ -16,19 +16,21 @@ const Facing = {
 }
 
 const directionMultiplier = new Map()
-directionMultiplier.set(Facing.NORTH, {x: 0, y: 1});
-directionMultiplier.set(Facing.SOUTH, {x: 0, y: -1});
-directionMultiplier.set(Facing.EAST, {x: 1, y: 0});
-directionMultiplier.set(Facing.WEST, {x: -1, y: 0});
-
-Object.freeze(Facing);
-Object.freeze(Actions);
+directionMultiplier.set(Facing.NORTH, { x: 0, y: 1 });
+directionMultiplier.set(Facing.SOUTH, { x: 0, y: -1 });
+directionMultiplier.set(Facing.EAST, { x: 1, y: 0 });
+directionMultiplier.set(Facing.WEST, { x: -1, y: 0 });
 
 const adjacentDirections = new BiMap;
 adjacentDirections.push(Facing.WEST, Facing.NORTH);
 adjacentDirections.push(Facing.NORTH, Facing.EAST);
 adjacentDirections.push(Facing.EAST, Facing.SOUTH);
 adjacentDirections.push(Facing.SOUTH, Facing.WEST);
+
+Object.freeze(Facing);
+Object.freeze(Actions);
+Object.freeze(directionMultiplier);
+Object.freeze(adjacentDirections);
 
 /**
  * Executes a requested command.
@@ -37,10 +39,10 @@ adjacentDirections.push(Facing.SOUTH, Facing.WEST);
  *                           Must contain a data field if a PLACE command is to be executed.
  * @return {Object} state - the new state of the robot. If the command was invalid, the state will remain the same.
  */
-processCommand = (state, command) => { 
+processCommand = (state, command) => {
     let proposedState = Object.assign({}, state);
 
-    if (!(state.isPlaced || (command.action === Actions.PLACE))){
+    if (!(state.isPlaced || (command.action === Actions.PLACE))) {
         console.log("Please place the robot first")
         return proposedState;
     }
@@ -88,22 +90,25 @@ isStateValid = (state) => {
  * @param {string} input - the user input
  * @returns {Object} action - the command given, data - any additional data
  */
-function processInput (input) {
+processInput = (input) => {
     let action;
     let data;
     let inputIsValid = true;
     const cleanInput = input.trim().toLowerCase();
     if (cleanInput.includes(Actions.PLACE)) {
         action = Actions.PLACE;
-            // Split on first occurcence of space, then split on subsequent commas
+        // Split on first occurcence of space, then split on subsequent commas
+        try {
             const inputData = cleanInput.split(/\s(.+)/)[1].split(",");
-            console.log(inputData);
-            data = { x: parseInt(inputData[0].trim()),
-                     y: parseInt(inputData[1].trim()),
-                     facing: inputData[2].trim()
-                   };
-            // inputIsValid = false;
-            // console.log("PLACE commands should be entered in the format PLACE X,Y,FACING");
+            data = {
+                x: parseInt(inputData[0].trim()),
+                y: parseInt(inputData[1].trim()),
+                facing: inputData[2].trim()
+            };
+        } catch (e) {
+            inputIsValid = false;
+            console.log("PLACE commands should be entered in the format PLACE X,Y,FACING");
+        }
     } else {
         action = cleanInput
         if (!Object.values(Actions).includes(action)) {
@@ -111,10 +116,10 @@ function processInput (input) {
             console.log("Action was not one of LEFT/RIGHT/PLACE/REPORT/MOVE");
         }
     }
-    return {action, data, inputIsValid}
+    return { action, data, inputIsValid }
 }
 
 exports.processCommand = processCommand;
 exports.processInput = processInput;
 exports.Facing = Facing;
-
+exports.Actions = Actions;

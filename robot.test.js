@@ -77,20 +77,22 @@ describe("Robot placement", () => {
 });
 
 describe("Robot input processing", () => {
-    it ("should ignore any commands that do not match LEFT/RIGHT/MOVE/REPORT/PLACE", () => {
-
+    it ("should mark any commands that do not match LEFT/RIGHT/MOVE/REPORT/PLACE as invalid", () => {
+        expect(robot.processInput("potato").isInputValid).toBeFalsy();
+        expect(robot.processInput("moveleft").isInputValid).toBeFalsy();
+        expect(robot.processInput("moveeeee").isInputValid).toBeFalsy();
     });
 
-    it("should ignore 'place' commands that do not have a valid data structure", () => {
-
+    it("should mark any 'place' commands that do not have a valid data structure as invalid", () => {
+        expect(robot.processInput("place 32north").isInputValid).toBeFalsy();
     });
 
-    it ("should normalise the strings before passing the data across", () => {
-
+    it ("should normalise the actions before returning them", () => {
+        expect(robot.processInput("MoVe").action).toEqual(robot.Actions.MOVE);
+        expect(robot.processInput("  MoVe       ").action).toEqual(robot.Actions.MOVE);
     })
 
     it ("should reject valid commands that have additional data passed in after the command", () => {
-
+        expect(robot.processInput("move 3,2,NORTH").isInputValid).toBeFalsy();
     });
-
 });
